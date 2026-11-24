@@ -23,6 +23,16 @@ def counts(base, head):
     return int(behind), int(ahead)
 
 
+def branch_status(main, head):
+    behind, ahead = counts(main, head)
+    changed_files = git("diff", "--name-only", main, head, "--").stdout.splitlines()
+    # Merge commits and already-squashed edits can be ahead in history while
+    # the saved files are identical. Only actual file changes need a PR.
+    return {"state": "ahead" if changed_files else "current", "head": head,
+            "main": main, "behind": behind, "ahead": ahead,
+            "changed_files": changed_files}
+
+
 def sync_branch(branch):
     # Retry if another editor pushes while a merge is being prepared.
     # Ordinary pushes reject stale updates; no force push or history rewrite.
@@ -35,12 +45,11 @@ def sync_branch(branch):
         managed = git("ls-tree", "--name-only", main, "--", *SYNC_FILES).stdout.splitlines()
         repair = bool(managed) and git("diff", "--quiet", main, head, "--", *managed, check=False).returncode != 0
         if behind == 0 and not repair:
-            return {"state": "ahead" if ahead else "current", "head": head,
-                    "main": main, "behind": behind, "ahead": ahead}
+            return branch_status(main, head)
         git("checkout", "--detach", head)
         identity = ("-c", "user.name=github-actions[bot]", "-c",
                     "user.email=41898282+github-actions[bot]@users.noreply.github.com")
-        result = git(*identity, "merge", "--no-edit", main, check=False) if behind else None
+        result = git(*identity, "merge", "--no-edit", "-m", f"Sync main into {branch}", main, check=False) if behind else None
         if result and result.returncode:
             files = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
             git("merge", "--abort", check=False)
@@ -57,9 +66,7 @@ def sync_branch(branch):
         pushed = git("push", "origin", f"HEAD:refs/heads/{branch}", check=False)
         if pushed.returncode == 0:
             head = git("rev-parse", "HEAD").stdout.strip()
-            behind, ahead = counts(main, head)
-            return {"state": "ahead" if ahead else "current", "head": head,
-                    "main": main, "behind": behind, "ahead": ahead}
+            return branch_status(main, head)
     raise RuntimeError(f"Could not update {branch}; branch moved or GitHub rejected the push")
 
 
@@ -78,24 +85,30 @@ def report(branch, status):
     latest = git("show", "-s", "--format=%cI", status["head"]).stdout.strip()
     main_date = git("show", "-s", "--format=%cI", status["main"]).stdout.strip()
     state = status["state"]
+    changed_files = status.get("changed_files")
+    file_count = len(changed_files) if changed_files is not None else "Not evaluated"
     heading = {"current": "Up to date", "ahead": "Edits waiting to merge",
                "conflict": "Merge conflicts — manual action needed", "error": "Sync failed"}[state]
-    title = f"{branch}: {heading} ({status['ahead']} ahead, {status['behind']} behind main)"
+    title = f"{branch}: {heading} ({file_count} files changed)" if changed_files is not None else f"{branch}: {heading}"
     compare = f"https://github.com/{repo}/compare/main...{branch}"
     body = f"""<!-- pinegrow-sync:{branch} -->
 ## {heading}
 
-| Branch | Commits ahead of main | Commits behind main | Latest commit date (with timezone) |
-| --- | ---: | ---: | --- |
-| `{branch}` | {status['ahead']} | {status['behind']} | {latest} |
+| Branch | Files different from main | History commits ahead of main | History commits behind main | Latest commit date (with timezone) |
+| --- | ---: | ---: | ---: | --- |
+| `{branch}` | {file_count} | {status['ahead']} | {status['behind']} | {latest} |
 
 Main latest commit: {main_date} (`{status['main'][:7]}`).
 Branch head: `{status['head'][:7]}`.
 
 [Compare changes / create a pull request]({compare}) · [Sync workflow](https://github.com/{repo}/actions/workflows/pinegrow-sync.yml)
 
-Main is merged automatically only when Git can merge without conflicts. Pinegrow edits are never automatically merged into main. Ahead counts include merge commits; they describe history, not how many files changed.
+Main is merged automatically only when Git can merge without conflicts. Pinegrow edits are never automatically merged into main. Only file differences generate pending-edit warnings. History counts include synchronization merges and previously squashed commits; extra history alone does not need a PR.
 """
+    if state == "current":
+        body += "\nThe branch's files match main. There are no pending file changes to merge.\n"
+    elif state == "ahead":
+        body += "\nFiles waiting to merge:\n" + "\n".join(f"- `{file}`" for file in changed_files) + "\n"
     if status.get("files"):
         body += "\nConflicting files (branch was left unchanged):\n" + "\n".join(
             f"- `{file}`" for file in status["files"])

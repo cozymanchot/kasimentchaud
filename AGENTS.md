@@ -1,5 +1,6 @@
 ## Project rules
 - Preserve published Git history. Make changes with new commits rather than force-pushing or rewriting existing commits.
+- Squash PRs into main using a title that describes the changes and no commit-list body. Do not import automatic branch-sync commits into main.
 - Each page is a complete HTML file. Keep its header, content, forms, and footer together in reading order.
 - Use ordinary HTML and descriptive CSS class names. Do not reintroduce React components, templates, or generated page fragments.
 - Shared styles live in styles.css. Shared interaction code lives in site.js. Keep visible copy and markup in the HTML files.
