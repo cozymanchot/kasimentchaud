@@ -112,10 +112,10 @@ if (shop) {
       if (matches) visibleCount++;
     }
     const ordered = [...cards];
-    if (sort.value === "asc") {
+    if (sort?.value === "asc") {
       ordered.sort((first, second) => Number(first.dataset.price) - Number(second.dataset.price));
     }
-    if (sort.value === "desc") {
+    if (sort?.value === "desc") {
       ordered.sort((first, second) => Number(second.dataset.price) - Number(first.dataset.price));
     }
     grid.append(...ordered);
@@ -135,7 +135,7 @@ if (shop) {
     if (filter === "color") color = button.dataset.value;
     updateShop();
   });
-  sort.addEventListener("change", updateShop);
+  sort?.addEventListener("change", updateShop);
   updateShop();
 }
 
