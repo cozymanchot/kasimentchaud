@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "tanstack_start_ts",
+      "name": "cozy-manchot",
       "devDependencies": {
         "prettier": "3.9.6",
         "vite": "8.1.5",

@@ -112,10 +112,10 @@ if (shop) {
       if (matches) visibleCount++;
     }
     const ordered = [...cards];
-    if (sort.value === "asc") {
+    if (sort?.value === "asc") {
       ordered.sort((first, second) => Number(first.dataset.price) - Number(second.dataset.price));
     }
-    if (sort.value === "desc") {
+    if (sort?.value === "desc") {
       ordered.sort((first, second) => Number(second.dataset.price) - Number(first.dataset.price));
     }
     grid.append(...ordered);
@@ -135,7 +135,7 @@ if (shop) {
     if (filter === "color") color = button.dataset.value;
     updateShop();
   });
-  sort.addEventListener("change", updateShop);
+  sort?.addEventListener("change", updateShop);
   updateShop();
 }
 
@@ -200,7 +200,7 @@ if (filledCart) {
 
   async function loadProduct(productId) {
     if (productCache.has(productId)) return productCache.get(productId);
-    const response = await fetch(`/produit/${encodeURIComponent(productId)}/`);
+    const response = await fetch(`/vitrine/${encodeURIComponent(productId)}/`);
     if (response.status === 404) return null;
     if (!response.ok) throw new Error("Product page unavailable");
     const html = new DOMParser().parseFromString(await response.text(), "text/html");
@@ -238,7 +238,7 @@ if (filledCart) {
         const item = itemTemplate.cloneNode(true);
         const link = item.querySelector("[data-item-name]");
         link.textContent = product.name;
-        link.href = `/produit/${encodeURIComponent(line.id)}/`;
+        link.href = `/vitrine/${encodeURIComponent(line.id)}/`;
         item.querySelector("[data-item-size]").textContent = line.size;
         item.querySelector("[data-item-price]").textContent = formatPrice(product.price);
         const artwork = product.artwork.cloneNode(true);

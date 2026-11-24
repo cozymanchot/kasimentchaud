@@ -5,6 +5,11 @@ import os
 import subprocess
 
 BRANCHES = ("pinegrow/mx", "pinegrow/collaborator")
+SYNC_FILES = (
+    ".gitignore", ".github/.gitignore", ".github/PINEGROW_SYNC.md",
+    ".github/workflows/pinegrow-sync.yml", ".github/scripts/pinegrow_sync.py",
+    ".github/tests/test_pinegrow_sync.py",
+)
 
 
 def git(*args, check=True):
@@ -27,20 +32,28 @@ def sync_branch(branch):
         main = git("rev-parse", "origin/main").stdout.strip()
         head = git("rev-parse", f"origin/{branch}").stdout.strip()
         behind, ahead = counts(main, head)
-        if behind == 0:
+        managed = git("ls-tree", "--name-only", main, "--", *SYNC_FILES).stdout.splitlines()
+        repair = bool(managed) and git("diff", "--quiet", main, head, "--", *managed, check=False).returncode != 0
+        if behind == 0 and not repair:
             return {"state": "ahead" if ahead else "current", "head": head,
                     "main": main, "behind": behind, "ahead": ahead}
         git("checkout", "--detach", head)
-        result = git("-c", "user.name=github-actions[bot]", "-c",
-                     "user.email=41898282+github-actions[bot]@users.noreply.github.com",
-                     "merge", "--no-edit", main, check=False)
-        if result.returncode:
+        identity = ("-c", "user.name=github-actions[bot]", "-c",
+                    "user.email=41898282+github-actions[bot]@users.noreply.github.com")
+        result = git(*identity, "merge", "--no-edit", main, check=False) if behind else None
+        if result and result.returncode:
             files = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
             git("merge", "--abort", check=False)
             if not files:
                 raise RuntimeError(f"Merge failed: {result.stderr or result.stdout}")
             return {"state": "conflict", "head": head, "main": main,
                     "behind": behind, "ahead": ahead, "files": files}
+        if managed:
+            # Pinegrow publishing can remove dotfiles. Keep only this automation's
+            # infrastructure canonical to main; leave website edits untouched.
+            git("restore", "--source", main, "--staged", "--worktree", "--", *managed)
+            if git("diff", "--cached", "--quiet", check=False).returncode:
+                git(*identity, "commit", "-m", "Restore shared Pinegrow synchronization files from main")
         pushed = git("push", "origin", f"HEAD:refs/heads/{branch}", check=False)
         if pushed.returncode == 0:
             head = git("rev-parse", "HEAD").stdout.strip()

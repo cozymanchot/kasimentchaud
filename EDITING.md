@@ -1,8 +1,8 @@
 # Editing together with Pinegrow
 
-Repository: https://github.com/ItsMrChewy/kasimentchaud
+Repository: https://github.com/cozymanchot/kasimentchaud
 
-Both branches start from the complete plain HTML website, not the React version on `main`.
+Both branches contain the complete plain HTML website. The gallery is `vitrine/index.html`, and each product has its own `vitrine/<product-id>/index.html` page.
 
 | Editor | Git branch |
 | --- | --- |
@@ -20,16 +20,14 @@ The folder already open in Pinegrow is now a Git checkout on `pinegrow/mx`. Save
 Run this once on their computer:
 
 ```sh
-git clone --branch pinegrow/collaborator https://github.com/ItsMrChewy/kasimentchaud.git cozy-manchot
+git clone --branch pinegrow/collaborator https://github.com/cozymanchot/kasimentchaud.git cozy-manchot
 ```
 
 Open the resulting `cozy-manchot` folder as a Pinegrow project.
 
 ## Send changes to GitHub
 
-In Pinegrow 10, use **Publish → Add target → GitHub repo**, authorize Pinegrow Connect for this repository, and select your own branch from the table above. Leave Publish path empty. Review the files and use **Commit to repository**. Publishing targets and editor state are personal and excluded from Git.
-
-Alternatively, in a terminal inside your own checkout:
+Save the files locally in Pinegrow first (use **Save local** on MXUMX's configured installation). Then use Git in a terminal inside your own checkout. Avoid Pinegrow's GitHub Publish target: its current preview excludes hidden files and proposes deleting `.github/` and `.gitignore` from the remote branch.
 
 ```sh
 git status
