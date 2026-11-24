@@ -5,13 +5,11 @@ A plain HTML website. Every page contains its complete header, content, forms, a
 ## Edit a page
 
 - Homepage — `index.html`
-- Shop — `boutique/index.html`
-- Hoodies — `hoodies/index.html`
-- Blankets — `couvertures/index.html`
+- Vitrine — `vitrine/index.html`
 - Story — `histoire/index.html`
 - Contact and FAQ — `contact/index.html`
 - Cart and checkout — `panier/index.html`
-- Individual products — `produit/<product-id>/index.html`
+- Individual products — `vitrine/<product-id>/index.html`
 - Missing pages — `404.html`
 
 Move, duplicate, or edit HTML directly inside that page. SVG illustrations are inline so their shapes and colors stay in the page too. Each page has its own navigation and footer, which can be edited independently.

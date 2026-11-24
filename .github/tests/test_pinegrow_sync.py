@@ -38,6 +38,7 @@ class SyncTests(unittest.TestCase):
         self.temp.cleanup()
 
     def commit(self, name, text):
+        Path(name).parent.mkdir(parents=True, exist_ok=True)
         Path(name).write_text(text)
         run('add', name)
         run('commit', '-m', text)
@@ -99,6 +100,23 @@ class SyncTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 sync.sync_branch('pinegrow/mx')
         self.assertEqual(run('rev-parse', 'refs/heads/pinegrow/mx', cwd=self.remote), original)
+
+    def test_deleted_workflow_is_restored_even_when_main_is_not_ahead(self):
+        workflow = '.github/workflows/pinegrow-sync.yml'
+        self.commit(workflow, 'shared workflow')
+        run('push', 'origin', 'main')
+        run('checkout', 'pinegrow/mx')
+        run('merge', '--ff-only', 'main')
+        run('rm', workflow)
+        run('commit', '-m', 'Pinegrow publish deleted hidden files')
+        self.commit('mine.txt', 'keep my website edit')
+        run('push', 'origin', 'pinegrow/mx')
+        result = sync.sync_branch('pinegrow/mx')
+        self.assertEqual(result['state'], 'ahead')
+        self.assertEqual(result['behind'], 0)
+        self.assertEqual(Path(workflow).read_text(), 'shared workflow')
+        self.assertEqual(Path('mine.txt').read_text(), 'keep my website edit')
+        self.assertEqual(run('show', 'refs/heads/pinegrow/mx:' + workflow, cwd=self.remote), 'shared workflow')
 
 
 if __name__ == '__main__':
