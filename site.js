@@ -200,7 +200,7 @@ if (filledCart) {
 
   async function loadProduct(productId) {
     if (productCache.has(productId)) return productCache.get(productId);
-    const response = await fetch(`/produit/${encodeURIComponent(productId)}/`);
+    const response = await fetch(`/vitrine/${encodeURIComponent(productId)}/`);
     if (response.status === 404) return null;
     if (!response.ok) throw new Error("Product page unavailable");
     const html = new DOMParser().parseFromString(await response.text(), "text/html");
@@ -238,7 +238,7 @@ if (filledCart) {
         const item = itemTemplate.cloneNode(true);
         const link = item.querySelector("[data-item-name]");
         link.textContent = product.name;
-        link.href = `/produit/${encodeURIComponent(line.id)}/`;
+        link.href = `/vitrine/${encodeURIComponent(line.id)}/`;
         item.querySelector("[data-item-size]").textContent = line.size;
         item.querySelector("[data-item-price]").textContent = formatPrice(product.price);
         const artwork = product.artwork.cloneNode(true);

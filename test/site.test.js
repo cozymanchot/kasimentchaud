@@ -38,7 +38,9 @@ test("internal page links and anchors point to existing HTML elements", () => {
 
 test("catalog card metadata matches the canonical product HTML", () => {
   const products = new Map();
-  for (const { file, html } of pages.filter(({ file }) => file.startsWith("produit/"))) {
+  for (const { file, html } of pages.filter(({ file }) =>
+    /^vitrine\/[^/]+\/index\.html$/.test(file),
+  )) {
     const tag = (html.match(/<div\b[^>]*>/g) ?? []).find((tag) =>
       /\sdata-product(?:=|\s|>)/.test(tag),
     );
