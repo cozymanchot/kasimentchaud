@@ -4,7 +4,8 @@
     --caramel: #b8865c;
     --glacier: #a4d4df;
     --cream: #f1e8d8;
-    --font-sans: "DM Sans", system-ui, sans-serif;
+
+    /* --font-sans: "DM Sans", system-ui, sans-serif */
     --font-display: "Fraunces", Georgia, serif;
     --background: var(--beige);
     --foreground: var(--navy);
@@ -21,9 +22,9 @@
 }
 
 *,
-:after,
-:before,
-::backdrop {
+:after,
+:before,
+::backdrop {
     box-sizing: border-box;
     border: 0 solid;
     margin: 0;
@@ -38,7 +39,7 @@
 }
 
 html,
-:host {
+:host {
     -webkit-text-size-adjust: 100%;
     tab-size: 4;
     font-feature-settings: normal;
@@ -62,11 +63,11 @@ abbr:where([title]) {
 }
 
 h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-size: inherit;
     font-weight: inherit;
 }
@@ -79,14 +80,14 @@ a {
 }
 
 b,
-strong {
+strong {
     font-weight: bolder;
 }
 
 code,
-kbd,
-samp,
-pre {
+kbd,
+samp,
+pre {
     font-feature-settings: normal;
     font-variation-settings: normal;
     font-family: ui-monospace,
@@ -105,7 +106,7 @@ small {
 }
 
 sub,
-sup {
+sup {
     vertical-align: baseline;
     font-size: 75%;
     line-height: 0;
@@ -139,34 +140,34 @@ summary {
 }
 
 ol,
-ul,
-menu {
+ul,
+menu {
     list-style: none;
 }
 
 img,
-svg,
-video,
-canvas,
-audio,
-iframe,
-embed,
-object {
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
     vertical-align: middle;
     display: block;
 }
 
 img,
-video {
+video {
     max-width: 100%;
     height: auto;
 }
 
 button,
-input,
-select,
-optgroup,
-textarea {
+input,
+select,
+optgroup,
+textarea {
     font: inherit;
     font-feature-settings: inherit;
     font-variation-settings: inherit;
@@ -282,7 +283,7 @@ textarea {
 }
 
 button,
-input:where([type="button"], [type="reset"], [type="submit"]) {
+input:where([type="button"], [type="reset"], [type="submit"]) {
     appearance: button;
 }
 
@@ -303,7 +304,7 @@ input:where([type="button"], [type="reset"], [type="submit"]) {
 }
 
 * {
-    border-color: var(--border);
+    border-color: Fraunces, Georgia, serif;
 }
 
 html {
@@ -318,9 +319,9 @@ body {
 }
 
 h1,
-h2,
-h3,
-h4 {
+h2,
+h3,
+h4 {
     font-family: var(--font-display);
     letter-spacing: -0.01em;
     font-weight: 700;
@@ -432,6 +433,7 @@ h4 {
     .logo-name {
         font-size: 1.25rem;
         line-height: 1.4;
+        font-family: 'Abel', sans-serif;
     }
 }
 
@@ -564,12 +566,14 @@ h4 {
 .hero-title {
     font-size: 3rem;
     line-height: 1.05;
+    font-family: 'Alyamama', serif;
 }
 
 @media (width >= 40rem) {
     .hero-title {
         font-size: 3.75rem;
         line-height: 1.05;
+        font-family: 'Acme', sans-serif;
     }
 }
 
@@ -724,7 +728,7 @@ h4 {
     border-radius: calc(1.5rem + 12px);
     padding-block: 0.5rem;
     padding-inline: 1rem;
-    font-family: Fraunces, Georgia, serif;
+    font-family: 'Abel', sans-serif;
     font-weight: 700;
     position: absolute;
     bottom: 2.5rem;
@@ -773,7 +777,7 @@ h4 {
 }
 
 .value-title {
-    font-family: Fraunces, Georgia, serif;
+    font-family: 'Abel', sans-serif;
     font-weight: 700;
 }
 
@@ -784,8 +788,8 @@ h4 {
 }
 
 .sparkle-icon,
-.location-icon,
-.student-icon {
+.location-icon,
+.student-icon {
     width: 1.75rem;
     height: 1.75rem;
     color: var(--caramel);
@@ -811,6 +815,7 @@ h4 {
 .section-title {
     font-size: 2.25rem;
     line-height: 1.11111;
+    font-family: 'Abel', sans-serif;
 }
 
 .text-link {
@@ -910,6 +915,7 @@ h4 {
     font-size: 1.125rem;
     line-height: 1.55556;
     overflow: hidden;
+    font-family: 'Abel', sans-serif;
 }
 
 .muted-caption {
@@ -960,6 +966,7 @@ h4 {
     text-align: center;
     font-size: 2.25rem;
     line-height: 1.11111;
+    font-family: 'Abel', sans-serif;
 }
 
 .process-grid {
@@ -1003,15 +1010,15 @@ h4 {
 
 .process-title {
     margin-top: 0.75rem;
-    font-family: Fraunces, Georgia, serif;
+    font-family: 'Abel', sans-serif;
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.4;
 }
 
 .wash-icon,
-.sewing-icon,
-.heart-icon {
+.sewing-icon,
+.heart-icon {
     width: 2rem;
     height: 2rem;
     margin-top: 1rem;
@@ -2055,8 +2062,8 @@ h4 {
 }
 
 .success-penguin,
-.shop-empty-penguin,
-.order-penguin {
+.shop-empty-penguin,
+.order-penguin {
     display: block;
     margin-inline: auto;
 }
