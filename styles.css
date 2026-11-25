@@ -4,7 +4,8 @@
     --caramel: #b8865c;
     --glacier: #a4d4df;
     --cream: #f1e8d8;
-    --font-sans: "DM Sans", system-ui, sans-serif;
+
+    /* --font-sans: "DM Sans", system-ui, sans-serif */
     --font-display: "Fraunces", Georgia, serif;
     --background: var(--beige);
     --foreground: var(--navy);
@@ -432,6 +433,7 @@ h4 {
     .logo-name {
         font-size: 1.25rem;
         line-height: 1.4;
+        font-family: 'Abel', sans-serif;
     }
 }
 
@@ -547,12 +549,14 @@ h4 {
 .hero-title {
     font-size: 3rem;
     line-height: 1.05;
+    font-family: 'Alyamama', serif;
 }
 
 @media (width >= 40rem) {
     .hero-title {
         font-size: 3.75rem;
         line-height: 1.05;
+        font-family: 'Acme', sans-serif;
     }
 }
 
@@ -707,7 +711,7 @@ h4 {
     border-radius: calc(1.5rem + 12px);
     padding-block: 0.5rem;
     padding-inline: 1rem;
-    font-family: Fraunces, Georgia, serif;
+    font-family: 'Abel', sans-serif;
     font-weight: 700;
     position: absolute;
     bottom: 2.5rem;
@@ -756,7 +760,7 @@ h4 {
 }
 
 .value-title {
-    font-family: Fraunces, Georgia, serif;
+    font-family: 'Abel', sans-serif;
     font-weight: 700;
 }
 
@@ -794,6 +798,7 @@ h4 {
 .section-title {
     font-size: 2.25rem;
     line-height: 1.11111;
+    font-family: 'Abel', sans-serif;
 }
 
 .text-link {
@@ -893,6 +898,7 @@ h4 {
     font-size: 1.125rem;
     line-height: 1.55556;
     overflow: hidden;
+    font-family: 'Abel', sans-serif;
 }
 
 .muted-caption {
@@ -943,6 +949,7 @@ h4 {
     text-align: center;
     font-size: 2.25rem;
     line-height: 1.11111;
+    font-family: 'Abel', sans-serif;
 }
 
 .process-grid {
@@ -986,7 +993,7 @@ h4 {
 
 .process-title {
     margin-top: 0.75rem;
-    font-family: Fraunces, Georgia, serif;
+    font-family: 'Abel', sans-serif;
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1.4;
