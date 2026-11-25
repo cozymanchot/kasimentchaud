@@ -4,13 +4,12 @@
 - Vitrine — `vitrine/index.html`
 - Story — `histoire/index.html`
 - Contact and FAQ — `contact/index.html`
-- Cart and checkout — `panier/index.html`
 - Individual products — `vitrine/<product-id>/index.html`
 - Missing pages — `404.html`
 
 Move, duplicate, or edit HTML directly inside that page. SVG illustrations are inline so their shapes and colors stay in the page too. Each page has its own navigation and footer, which can be edited independently.
 
-`styles.css` contains ordinary CSS with names such as `site-header`, `hero-title`, and `product-card`. `site.js` only handles interactions such as the menu, filters, artwork views, forms, and the saved cart.
+`styles.css` contains ordinary CSS with names such as `site-header`, `hero-title`, and `product-card`. `site.js` only handles interactions such as the menu, filters, artwork views, forms, and product enquiry links.
 
 Products have readable `data-product-id`, `data-price`, `data-category`, `data-color`, and `data-sizes` attributes. Update the price text and its `data-price` value together. Keep the shop cards in sync with the product page. The tests flag inconsistent catalog attributes.
 
@@ -35,6 +34,6 @@ The isolated [Cozy Manchot — Plain HTML branch](https://builder.io/app/project
 
 Visual editing is not verified: Builder reported “No Editable Elements Found,” and its Style tab did not select native HTML elements during testing. A development-only source-location mapping experiment did not resolve selection and was removed. Do not assume that preview support means Design mode can save changes to these HTML files. The existing project's default Git branch remains `main`.
 
-Append `?edit=1` to a page's preview URL to show conditional content such as form confirmations, open FAQ answers, and cart states. On the cart page this displays a sample item without saving it. This makes the HTML available to select while designing. Reopen the regular URL to test normal behavior.
+Append `?edit=1` to a page's preview URL to show conditional content such as form confirmations, open FAQ answers, and form states. This makes the HTML available to select while designing. Reopen the regular URL to test normal behavior.
 
 The source contains no Builder Content CMS integration or account credentials.

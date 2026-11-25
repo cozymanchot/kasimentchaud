@@ -5,6 +5,6 @@
 - Use ordinary HTML and descriptive CSS class names. Do not reintroduce React components, templates, or generated page fragments.
 - Shared styles live in styles.css. Shared interaction code lives in site.js. Keep visible copy and markup in the HTML files.
 - Product pages live in vitrine/<product-id>/index.html. Product cards contain their filter and sort data as HTML data attributes. Keep these attributes consistent with each product page.
-- The cart uses the existing cozy-manchot-cart localStorage key and id/size/qty format. Forms and checkout are demonstrations with no backend.
+- Ordering uses product enquiry links to the contact page, not a cart or checkout. Do not claim a message was sent without a configured delivery channel.
 - Product visuals are inline SVG patterns. The brand forbids photography.
 - Run npm run check, npm test, and npm run build before publishing source changes.

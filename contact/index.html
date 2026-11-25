@@ -35,11 +35,7 @@
                     <a class="navigation-link" href="/vitrine/">Vitrine</a><a class="navigation-link" href="/histoire/">Notre histoire</a><a class="navigation-link active-navigation-link" href="/contact/" aria-current="page">Contact</a>
                 </nav>
                 <div class="header-actions">
-                    <a class="cart-link" aria-label="Panier, 0 article(s)" href="/panier/" data-cart-link=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cart-icon" aria-hidden="true">
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            <path d="M3.103 6.034h17.794"></path>
-                            <path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path>
-                        </svg><span class="cart-count" data-cart-count="" hidden="">0</span></a><button class="menu-toggle" aria-label="Menu" aria-expanded="false" data-menu-toggle="" aria-controls="mobile-navigation">
+                    <button class="menu-toggle" aria-label="Menu" aria-expanded="false" data-menu-toggle="" aria-controls="mobile-navigation">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-icon" aria-hidden="true">
                             <path d="M4 5h16"></path>
                             <path d="M4 12h16"></path>
@@ -58,10 +54,11 @@
                 <section>
                     <h1 class="page-title">Écris-nous</h1>
                     <p class="team-description">
-            Une question, une idée, un câlin à partager? On répond vite. </p>
-                    <form class="contact-form" data-contact-form="">
-                        <label class="form-field"><span class="form-label">Nom</span><input required="" class="form-input"/></label><label class="form-field"><span class="form-label">Courriel</span><input type="email" required="" class="form-input"/></label><label class="form-field"><span class="form-label">Message</span><textarea required="" rows="5" class="form-input"></textarea></label><button class="button-primary">Envoyer</button>
+            Pour commander une pièce, écris-nous ici ou contacte-nous directement. Indique le produit et la taille souhaités. </p>
+                    <form id="message" class="contact-form" data-contact-form="">
+                        <label class="form-field"><span class="form-label">Nom</span><input name="name" autocomplete="name" required="" class="form-input"/></label><label class="form-field"><span class="form-label">Courriel</span><input name="email" type="email" autocomplete="email" required="" class="form-input"/></label><label class="form-field"><span class="form-label">Message</span><textarea name="message" required="" rows="5" class="form-input"></textarea></label><button class="button-primary">Prévisualiser le message</button>
                     </form>
+                    <p class="muted-caption">Ce formulaire est en démonstration. Aucun message n’est envoyé pour le moment.</p>
                     <div class="contact-success" data-contact-success="" role="status" hidden="">
                         <svg viewBox="0 0 64 64" class="success-penguin" aria-hidden="true">
                             <ellipse cx="32" cy="36" rx="20" ry="24" fill="var(--navy)"></ellipse>
@@ -73,8 +70,9 @@
                             <ellipse cx="24" cy="60" rx="5" ry="2.5" fill="var(--caramel)"></ellipse>
                             <ellipse cx="40" cy="60" rx="5" ry="2.5" fill="var(--caramel)"></ellipse>
                         </svg>
-                        <p class="success-title">Message reçu!</p>
-                        <p>On te revient très bientôt.</p>
+                        <p class="success-title">Aperçu du message</p>
+                        <p class="contact-message-preview" data-contact-preview=""></p>
+                        <p>Aucun message n’a été envoyé. Contacte-nous directement pour ta commande.</p>
                     </div>
                     <div class="contact-social-links">
                         <a href="https://instagram.com" target="_blank" rel="noreferrer" class="button-outline"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="social-icon" aria-hidden="true">
@@ -159,9 +157,6 @@
                     </li>
                     <li>
                         <a class="footer-link" href="/contact/" aria-current="page">Contact</a>
-                    </li>
-                    <li>
-                        <a class="footer-link" href="/panier/">Panier</a>
                     </li>
                 </ul>
                 <div class="footer-details">

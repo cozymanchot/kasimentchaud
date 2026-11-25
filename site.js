@@ -1,60 +1,9 @@
 // Shared behavior only. All page content and markup live in the HTML files.
 const editing = new URLSearchParams(window.location.search).has("edit");
-const CART_STORAGE_KEY = "cozy-manchot-cart";
-let cart = readCart();
-
-function readCart() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
-    if (!Array.isArray(saved)) return [];
-    return saved.filter(
-      (line) =>
-        line &&
-        typeof line.id === "string" &&
-        typeof line.size === "string" &&
-        Number.isInteger(line.qty) &&
-        line.qty > 0,
-    );
-  } catch {
-    return [];
-  }
-}
-
-function saveCart() {
-  if (editing) {
-    updateCartCount();
-    return;
-  }
-  try {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-  } catch {
-    // The cart still works for this visit when browser storage is unavailable.
-  }
-  updateCartCount();
-}
-
-function formatPrice(amount) {
-  return `${amount.toFixed(2).replace(".", ",")} $`;
-}
-
-function updateCartCount() {
-  const count = Math.max(
-    editing ? 1 : 0,
-    cart.reduce((count, line) => count + line.qty, 0),
-  );
-  const link = document.querySelector("[data-cart-link]");
-  link?.setAttribute("aria-label", `Panier, ${count} article(s)`);
-  const badge = document.querySelector("[data-cart-count]");
-  if (badge) {
-    badge.textContent = String(count);
-    badge.hidden = count === 0;
-  }
-}
 
 for (const year of document.querySelectorAll("[data-year]")) {
   year.textContent = String(new Date().getFullYear());
 }
-updateCartCount();
 
 const menuButton = document.querySelector("[data-menu-toggle]");
 const mobileNavigation = document.querySelector("#mobile-navigation");
@@ -71,9 +20,16 @@ newsletterForm?.addEventListener("submit", (event) => {
 });
 
 const contactForm = document.querySelector("[data-contact-form]");
+const enquiry = new URLSearchParams(window.location.search);
+const message = contactForm?.querySelector('[name="message"]');
+if (message && enquiry.get("produit") && !message.value) {
+  const size = enquiry.get("taille");
+  message.value = `Bonjour! Je souhaite commander ${enquiry.get("produit")}${size ? `, taille ${size}` : ""}. Est-ce disponible?`;
+}
 contactForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   contactForm.hidden = true;
+  document.querySelector("[data-contact-preview]").textContent = message.value;
   document.querySelector("[data-contact-success]").hidden = false;
 });
 
@@ -141,23 +97,24 @@ if (shop) {
 
 const productPage = document.querySelector("[data-product]");
 if (productPage) {
-  const addButton = productPage.querySelector("[data-add-to-cart]");
-  let selectedSize = productPage.querySelector("[data-size]").dataset.size;
+  const orderLink = productPage.querySelector("[data-order-link]");
+  const sizeButtons = Array.from(productPage.querySelectorAll("[data-size]"));
+  let selectedSize = sizeButtons[0]?.dataset.size || "";
 
   function updateProduct() {
-    const inCart = cart.some(
-      (line) => line.id === productPage.dataset.productId && line.size === selectedSize,
-    );
-    for (const button of productPage.querySelectorAll("[data-size]")) {
+    for (const button of sizeButtons) {
       button.setAttribute("aria-pressed", String(button.dataset.size === selectedSize));
     }
-    addButton.disabled = inCart;
-    addButton.querySelector("[data-add-label]").hidden = inCart;
-    addButton.querySelector("[data-added-label]").hidden = !inCart;
-    productPage.querySelector("[data-view-cart]").hidden = !inCart;
+    if (orderLink) {
+      const query = new URLSearchParams({
+        produit: productPage.querySelector("[data-product-name]").textContent.trim(),
+      });
+      if (selectedSize) query.set("taille", selectedSize);
+      orderLink.href = `/contact/?${query}#message`;
+    }
   }
 
-  for (const button of productPage.querySelectorAll("[data-size]")) {
+  for (const button of sizeButtons) {
     button.addEventListener("click", () => {
       selectedSize = button.dataset.size;
       updateProduct();
@@ -179,142 +136,14 @@ if (productPage) {
       }
     });
   }
-  addButton.addEventListener("click", () => {
-    cart.push({ id: productPage.dataset.productId, size: selectedSize, qty: 1 });
-    saveCart();
-    updateProduct();
-  });
   updateProduct();
 }
 
-const filledCart = document.querySelector("[data-filled-cart]");
-if (filledCart) {
-  const emptyCart = document.querySelector("[data-empty-cart]");
-  const items = document.querySelector("[data-cart-items]");
-  const itemTemplate = items.querySelector("[data-cart-item]").cloneNode(true);
-  const summary = document.querySelector(".cart-summary");
-  const checkout = document.querySelector("[data-checkout-form]");
-  const errorMessage = document.querySelector("[data-cart-error]");
-  const productCache = new Map();
-  let renderVersion = 0;
-
-  async function loadProduct(productId) {
-    if (productCache.has(productId)) return productCache.get(productId);
-    const response = await fetch(`/vitrine/${encodeURIComponent(productId)}/`);
-    if (response.status === 404) return null;
-    if (!response.ok) throw new Error("Product page unavailable");
-    const html = new DOMParser().parseFromString(await response.text(), "text/html");
-    const product = html.querySelector("[data-product]");
-    if (!product || product.dataset.productId !== productId) return null;
-    const info = {
-      name: product.querySelector("[data-product-name]").textContent,
-      price: Number(product.dataset.price),
-      artwork: product.querySelector("[data-main-visual]"),
-    };
-    productCache.set(productId, info);
-    return info;
-  }
-
-  async function renderCart() {
-    const version = ++renderVersion;
-    const lines = [...cart];
-    filledCart.hidden = lines.length === 0;
-    emptyCart.hidden = lines.length > 0;
-    if (lines.length === 0) return;
-    checkout.querySelector("button").disabled = true;
-    errorMessage.hidden = true;
-
-    try {
-      const products = await Promise.all(lines.map((line) => loadProduct(line.id)));
-      if (version !== renderVersion) return;
-      items.replaceChildren();
-      let subtotal = 0;
-      const validLines = [];
-      for (const [index, line] of lines.entries()) {
-        const product = products[index];
-        if (!product) continue;
-        validLines.push(line);
-        subtotal += product.price * line.qty;
-        const item = itemTemplate.cloneNode(true);
-        const link = item.querySelector("[data-item-name]");
-        link.textContent = product.name;
-        link.href = `/vitrine/${encodeURIComponent(line.id)}/`;
-        item.querySelector("[data-item-size]").textContent = line.size;
-        item.querySelector("[data-item-price]").textContent = formatPrice(product.price);
-        const artwork = product.artwork.cloneNode(true);
-        artwork.removeAttribute("class");
-        artwork.removeAttribute("data-main-visual");
-        const pattern = artwork.querySelector("pattern");
-        const previousId = pattern.id;
-        pattern.id = previousId + "-cart-" + index;
-        artwork
-          .querySelector(`[fill="url(#${previousId})"]`)
-          .setAttribute("fill", `url(#${pattern.id})`);
-        item.querySelector("[data-item-art]").replaceChildren(artwork);
-        const removeButton = item.querySelector("[data-remove-item]");
-        removeButton.setAttribute("aria-label", `Retirer ${product.name}`);
-        removeButton.addEventListener("click", () => {
-          cart = cart.filter((saved) => !(saved.id === line.id && saved.size === line.size));
-          saveCart();
-          renderCart();
-        });
-        items.append(item);
-      }
-      if (!editing && validLines.length !== cart.length) {
-        cart = validLines;
-        saveCart();
-      }
-      const shipping =
-        subtotal >= Number(summary.dataset.freeShipping) || subtotal === 0
-          ? 0
-          : Number(summary.dataset.shippingFee);
-      document.querySelector("[data-subtotal]").textContent = formatPrice(subtotal);
-      document.querySelector("[data-shipping]").textContent = shipping
-        ? formatPrice(shipping)
-        : "Gratuite";
-      document.querySelector("[data-total]").textContent = formatPrice(subtotal + shipping);
-      document.querySelector("[data-shipping-note]").hidden = shipping === 0;
-      checkout.querySelector("button").disabled = false;
-      filledCart.hidden = validLines.length === 0;
-      emptyCart.hidden = validLines.length > 0 && !editing;
-    } catch {
-      if (version !== renderVersion) return;
-      errorMessage.hidden = false;
-    }
-  }
-
-  checkout.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!editing) {
-      cart = [];
-      saveCart();
-    }
-    const name = String(new FormData(checkout).get("name")).split(" ")[0];
-    document.querySelector("[data-customer-name]").textContent = name;
-    filledCart.hidden = true;
-    document.querySelector("[data-order-success]").hidden = false;
-  });
-
-  if (editing && cart.length === 0) {
-    cart = [{ id: "petit-banquise", size: "S", qty: 1 }];
-  }
-  renderCart();
-}
-
-window.addEventListener("storage", (event) => {
-  if (event.key !== CART_STORAGE_KEY) return;
-  cart = readCart();
-  updateCartCount();
-  // A full page refresh reuses the same simple startup logic for every page.
-  window.location.reload();
-});
-
 // Authoring view shows normally conditional content for visual selection.
-// It never submits orders or changes the visitor's stored cart.
 if (editing) {
   for (const details of document.querySelectorAll("details")) details.open = true;
   for (const state of document.querySelectorAll(
-    "[data-newsletter-success], [data-contact-success], [data-order-success], [data-empty-cart], [data-shop-empty]",
+    "[data-newsletter-success], [data-contact-success], [data-shop-empty]",
   )) {
     state.hidden = false;
   }
